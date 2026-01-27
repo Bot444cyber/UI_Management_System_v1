@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------------------------
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum NotificationType {
+  PAYMENT
+  COMMENT
+  LIKE
+  WISHLIST
+  SYSTEM
+}
+
+// --------------------------------------
+// Models
+// --------------------------------------
+
+model User {
+  user_id       Int        @id @default(autoincrement())
+  full_name     String     @db.VarChar(255)
+  email         String     @unique @db.VarChar(191)
+  password_hash String?    @db.VarChar(255)
+  google_id     String?    @unique @db.VarChar(191)
+  role          Role       @default(CUSTOMER)
+  status        UserStatus @default(ACTIVE)
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
+
+  payments      Payment[]
+  createdUis    UI[]      @relation("UserCreatedUIs")
+  userLikes     Like[]
+  comments      Comment[]
+  wishlists     Wishlist[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model AuthOtp {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  otp       Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UI {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(255)
+  price       String   @db.VarChar(50) // flexible pricing (e.g. "$48", "Free")
+  author      String   @db.VarChar(255)
+  category    String   @db.VarChar(100)
+  imageSrc    String   @db.Text
+  google_file_id String? @db.VarChar(255)
+  color       String?  @db.VarChar(50)
+  tags        Json?    // MySQL uses Json for arrays
+  specifications Json? // Array of strings e.g. ["Responsive", "Dark Mode"]
+  overview    String?  @db.Text
+  highlights  Json?    // MySQL uses Json for arrays
+  showcase    Json?    // MySQL uses Json for arrays
+  
+  downloads   Int      @default(0)
+  likes       Int      @default(0)
+  rating      Float    @default(4.8)
+
+  payments    Payment[]
+  userLikes   Like[]
+  comments    Comment[]
+  wishedBy    Wishlist[]
+  notifications Notification[]
+
+  creatorId   Int?        
+  creator     User?       @relation("UserCreatedUIs", fields: [creatorId], references: [user_id])
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  fileType    String?  @db.VarChar(20) // e.g. "zip", "pdf"
+  
+  @@map("uis")
+}
+
+model Payment {
+  id          String        @id @default(uuid())
+  amount      Float
+  status      PaymentStatus @default(PENDING)
+  stripePaymentIntentId String? @unique @db.VarChar(191)
+
+  
+  userId      Int
+  user        User          @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  
+  uiId        String
+  ui          UI            @relation(fields: [uiId], references: [id], onDelete: Cascade)
+
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+
+  @@map("payments")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  user_id   Int
+  ui_id     String
+  created_at DateTime @default(now())
+
+  user      User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  ui        UI       @relation(fields: [ui_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, ui_id]) 
+  @@map("likes")
+}
+
+model Wishlist {
+  id        String   @id @default(uuid())
+  user_id   Int
+  ui_id     String
+  created_at DateTime @default(now())
+
+  user      User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  ui        UI       @relation(fields: [ui_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, ui_id])
+  @@map("wishlists")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  user_id   Int
+  ui_id     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user      User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  ui        UI       @relation(fields: [ui_id], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  type      NotificationType
+  message   String           @db.Text
+  isRead    Boolean          @default(false)
+  
+  userId    Int
+  user      User             @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  uiId      String?
+  ui        UI?              @relation(fields: [uiId], references: [id], onDelete: Cascade)
+  
+  created_at DateTime      @default(now())
+
+  @@map("notifications")
+}

@@ -1,0 +1,82 @@
+name: Production Build & Deploy
+
+on:
+  push:
+    branches: [ "main" ] # Jab main branch par push ho, tab chale
+
+jobs:
+  # STEP 1: SAFETY CHECK (Build Guard)
+  # Ye step GitHub ke computer par chalega, tumhare VPS par nahi.
+  # Agar yahan error aaya, to server par kuch nahi jayega.
+  check-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # --- Backend Check ---
+      - name: Check Backend Build (Safety)
+        run: |
+          cd backend
+          npm install
+          npx prisma generate
+          npm run build 
+          # Agar yahan TypeScript error hua, to pipeline yahin fail ho jayegi.
+
+      # --- Frontend Check ---
+      - name: Check Frontend Build (Safety)
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          # Ye check karega ke Next.js build ho raha hai ya nahi.
+
+  # # STEP 2: DEPLOY TO VPS
+  # # Ye tabhi chalega agar upar wala 'check-build' pass ho gaya.
+  # deploy:
+  #   needs: check-build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy via SSH
+  #       uses: appleboy/ssh-action@master
+  #       with:
+  #         host: ${{ secrets.VPS_HOST }}
+  #         username: ${{ secrets.VPS_USER }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         script: |
+  #           # --- CONFIGURATION (Isko apne hisaab se change karo) ---
+  #           ROOT_DIR="/var/www/my-project"  # Jahan tumhara code pada hai
+            
+  #           echo "🚀 Deployment Started..."
+            
+  #           # 1. Latest code pull karo
+  #           cd $ROOT_DIR
+  #           git pull origin main
+            
+  #           # 2. Backend Update
+  #           echo "⚙️ Updating Backend..."
+  #           cd backend
+  #           npm install
+  #           npx prisma generate
+  #           npx prisma migrate deploy # DB changes apply karo
+  #           npm run build
+  #           # PM2 Restart (Naam change kar lena agar different hai)
+  #           pm2 restart backend-api || pm2 start dist/index.js --name "backend-api"
+            
+  #           # 3. Frontend Update
+  #           echo "🎨 Updating Frontend..."
+  #           cd ../frontend
+  #           npm install
+  #           npm run build
+  #           # PM2 Restart
+  #           pm2 restart frontend-client || pm2 start npm --name "frontend-client" -- start
+            
+  #           # 4. Save State
+  #           pm2 save
+            
+  #           echo "✅ Deployment Successfully Finished!"
