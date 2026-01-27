@@ -23,7 +23,7 @@ const uploadFileToDrive = (filePath, fileName, mimeType, isPublic) => __awaiter(
     if (!clientId || !clientSecret || !refreshToken) {
         throw new Error("Missing OAuth Credentials");
     }
-    const auth = new googleapis_1.google.auth.OAuth2(clientId, clientSecret, 'https://developers.google.com/oauthplayground');
+    const auth = new googleapis_1.google.auth.OAuth2(clientId, clientSecret, process.env.GOOGLE_REDIRECT_URI || 'https://developers.google.com/oauthplayground');
     auth.setCredentials({ refresh_token: refreshToken });
     const drive = googleapis_1.google.drive({ version: 'v3', auth });
     const media = {
@@ -66,7 +66,7 @@ const deleteFileFromDrive = (fileId) => __awaiter(void 0, void 0, void 0, functi
             console.error("Missing OAuth Credentials for deletion");
             return;
         }
-        const auth = new googleapis_1.google.auth.OAuth2(clientId, clientSecret, 'https://developers.google.com/oauthplayground');
+        const auth = new googleapis_1.google.auth.OAuth2(clientId, clientSecret, process.env.GOOGLE_REDIRECT_URI || 'https://developers.google.com/oauthplayground');
         auth.setCredentials({ refresh_token: refreshToken });
         const drive = googleapis_1.google.drive({ version: 'v3', auth });
         yield drive.files.delete({ fileId });

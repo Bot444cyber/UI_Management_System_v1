@@ -25,7 +25,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         if (typeof window === 'undefined') return;
 
         // Connect to the backend URL
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:1000";
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
 
         console.log("🔌 Initializing Socket connection to:", backendUrl);
 

@@ -1,10 +1,6 @@
 
 import cors from "cors";
 import dotenv from "dotenv";
-// import { RedisStore } from "connect-redis"; // Removed for Shared Hosting
-// import { redisClient } from "./config/redis"; // Removed
-// import sessionClient from "./config/redisSession"; // Removed
-// import { initWorkers } from "./workers"; // Removed
 import PrismaInstance from "./config/PrismaInstance";
 import express, { Express, Request, Response } from "express";
 import { createServer } from "http";

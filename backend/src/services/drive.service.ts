@@ -14,12 +14,12 @@ export const uploadFileToDrive = async (filePath: string, fileName: string, mime
     const auth = new google.auth.OAuth2(
         clientId,
         clientSecret,
-        'https://developers.google.com/oauthplayground'
+        process.env.GOOGLE_REDIRECT_URI || 'https://developers.google.com/oauthplayground'
     );
     auth.setCredentials({ refresh_token: refreshToken });
 
     const drive = google.drive({ version: 'v3', auth });
-
+    
     const media = {
         mimeType: mimeType,
         body: fs.createReadStream(filePath),
@@ -69,7 +69,7 @@ export const deleteFileFromDrive = async (fileId: string) => {
         const auth = new google.auth.OAuth2(
             clientId,
             clientSecret,
-            'https://developers.google.com/oauthplayground'
+            process.env.GOOGLE_REDIRECT_URI || 'https://developers.google.com/oauthplayground'
         );
         auth.setCredentials({ refresh_token: refreshToken });
 

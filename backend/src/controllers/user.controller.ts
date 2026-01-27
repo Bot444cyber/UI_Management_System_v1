@@ -13,7 +13,7 @@ export const googleAuth = passport.authenticate('google', {
 // Handle Google Callback
 export const googleAuthCallback = (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate('google', {
-        failureRedirect: 'http://localhost:3000/login?error=auth_failed', // Redirect to frontend login on failure
+        failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`,
         session: true
     }, async (err: any, profile: any, info: any) => {
         console.log('🔍 Google Auth Callback Started');
@@ -24,7 +24,7 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
 
         if (!profile) {
             console.error('❌ Google Auth Error: No Profile received');
-            return res.redirect('http://localhost:3000/login?error=no_user');
+            return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_user`);
         }
 
         try {
@@ -123,7 +123,7 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
 
                 console.log('🚀 Redirecting to frontend...');
                 // Successful authentication
-                return res.redirect(`http://localhost:3000?token=${token}`);
+                return res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
             });
 
         } catch (error) {

@@ -8,7 +8,7 @@ const socket_io_1 = require("socket.io");
 const passport_1 = __importDefault(require("passport"));
 let io = null;
 const initSocket = (httpServer, sessionMiddleware) => {
-    var _a;
+    var _a, _b;
     // Shared CORS configuration
     const allowedOrigins = [
         process.env.FRONTEND_URL,
@@ -16,7 +16,13 @@ const initSocket = (httpServer, sessionMiddleware) => {
     ].filter((origin) => !!origin);
     io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:3001", process.env.FRONTEND_URL || ""].filter(Boolean),
+            origin: [
+                process.env.FRONTEND_URL,
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:3001",
+                ...(((_b = process.env.ALLOWED_ORIGINS) === null || _b === void 0 ? void 0 : _b.split(',')) || [])
+            ].filter((origin) => !!origin),
             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             credentials: true
         }

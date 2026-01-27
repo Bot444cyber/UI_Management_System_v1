@@ -27,7 +27,7 @@ const uploadFileToDrive = async (filePath: string, fileName: string, mimeType: s
     const auth = new google.auth.OAuth2(
         clientId,
         clientSecret,
-        'https://developers.google.com/oauthplayground'
+        process.env.GOOGLE_REDIRECT_URI || 'https://developers.google.com/oauthplayground'
     );
     auth.setCredentials({ refresh_token: refreshToken });
 

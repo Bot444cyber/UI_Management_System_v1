@@ -14,7 +14,13 @@ export const initSocket = (httpServer: HttpServer, sessionMiddleware: RequestHan
 
     io = new Server(httpServer, {
         cors: {
-            origin: ["http://localhost:3000", "http://localhost:5173", "http://localhost:3001", process.env.FRONTEND_URL || ""].filter(Boolean),
+            origin: [
+                process.env.FRONTEND_URL,
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://localhost:3001",
+                ...(process.env.ALLOWED_ORIGINS?.split(',') || [])
+            ].filter((origin): origin is string => !!origin),
             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             credentials: true
         }
