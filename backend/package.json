@@ -4,9 +4,8 @@
     "description": "",
     "main": "dist/src/server.js",
     "scripts": {
-        "start": "node dist/src/server.js",
-        "dev": "nodemon --ignore uploads/ src/server.ts",
-        "build": "tsc"
+        "build": "tsc",
+        "start": "node dist/src/server.js"
     },
     "keywords": [],
     "author": "",
