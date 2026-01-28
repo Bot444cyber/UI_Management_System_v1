@@ -8,30 +8,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const pg_1 = require("pg");
+const promise_1 = __importDefault(require("mysql2/promise"));
 function CreateDB(dbName) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!/^[a-zA-Z0-9_-]+$/.test(dbName)) {
             throw new Error(`Invalid database name: ${dbName}. Only alphanumeric characters, underscores, and dashes are allowed.`);
         }
-        // Connect to PostgreSQL server (connect to default 'postgres' database)
-        const client = new pg_1.Client({
-            user: process.env.DB_USER || 'postgres',
+        // Connect to MySQL server (no database selected yet)
+        const connection = yield promise_1.default.createConnection({
+            user: process.env.DB_USER || 'root',
             host: process.env.DB_HOST || 'localhost',
-            database: 'postgres', // Connect to default database to create new one
             password: process.env.DB_PASSWORD,
-            port: parseInt(process.env.DB_PORT || '5432'),
+            port: parseInt(process.env.DB_PORT || '3306'),
         });
         try {
-            yield client.connect();
             // Check if database exists
-            const res = yield client.query(`SELECT 1 FROM pg_database WHERE datname = $1`, [dbName]);
-            if (res.rowCount === 0) {
+            const [rows] = yield connection.query(`SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`, [dbName]);
+            if (rows.length === 0) {
                 // Create the database
-                // Note: CREATE DATABASE cannot run locally in a transaction block, 
-                // so we're safe here as we're just running a direct query
-                yield client.query(`CREATE DATABASE "${dbName}"`);
+                yield connection.query(`CREATE DATABASE \`${dbName}\``);
                 console.log(`✅ Database "${dbName}" created successfully.`);
             }
             else {
@@ -43,7 +42,7 @@ function CreateDB(dbName) {
             throw error;
         }
         finally {
-            yield client.end();
+            yield connection.end();
         }
     });
 }

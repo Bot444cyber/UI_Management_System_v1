@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -81,6 +81,7 @@ model UI {
   google_file_id String? @db.VarChar(255)
   color          String? @db.VarChar(50)
   tags           Json? // MySQL uses Json for arrays
+  specifications Json? // Array of strings e.g. ["Responsive", "Dark Mode"]
   overview       String? @db.Text
   highlights     Json? // MySQL uses Json for arrays
   showcase       Json? // MySQL uses Json for arrays

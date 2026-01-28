@@ -1,34 +1,29 @@
 
-import { Client } from 'pg';
+import mysql from 'mysql2/promise';
 
 async function CreateDB(dbName: string) {
     if (!/^[a-zA-Z0-9_-]+$/.test(dbName)) {
         throw new Error(`Invalid database name: ${dbName}. Only alphanumeric characters, underscores, and dashes are allowed.`);
     }
 
-    // Connect to PostgreSQL server (connect to default 'postgres' database)
-    const client = new Client({
-        user: process.env.DB_USER || 'postgres',
+    // Connect to MySQL server (no database selected yet)
+    const connection = await mysql.createConnection({
+        user: process.env.DB_USER || 'root',
         host: process.env.DB_HOST || 'localhost',
-        database: 'postgres', // Connect to default database to create new one
         password: process.env.DB_PASSWORD,
-        port: parseInt(process.env.DB_PORT || '5432'),
+        port: parseInt(process.env.DB_PORT || '3306'),
     });
 
     try {
-        await client.connect();
-        
         // Check if database exists
-        const res = await client.query(
-            `SELECT 1 FROM pg_database WHERE datname = $1`,
+        const [rows] = await connection.query(
+            `SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?`,
             [dbName]
         );
 
-        if (res.rowCount === 0) {
+        if ((rows as any[]).length === 0) {
             // Create the database
-            // Note: CREATE DATABASE cannot run locally in a transaction block, 
-            // so we're safe here as we're just running a direct query
-            await client.query(`CREATE DATABASE "${dbName}"`);
+            await connection.query(`CREATE DATABASE \`${dbName}\``);
             console.log(`✅ Database "${dbName}" created successfully.`);
         } else {
             console.log(`ℹ️ Database "${dbName}" already exists.`);
@@ -37,7 +32,7 @@ async function CreateDB(dbName: string) {
         console.error(`❌ Error creating database "${dbName}":`, error);
         throw error;
     } finally {
-        await client.end();
+        await connection.end();
     }
 }
 

@@ -25,7 +25,7 @@ exports.googleAuth = passport_1.default.authenticate('google', {
 // Handle Google Callback
 const googleAuthCallback = (req, res, next) => {
     passport_1.default.authenticate('google', {
-        failureRedirect: 'http://localhost:3000/login?error=auth_failed', // Redirect to frontend login on failure
+        failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`,
         session: true
     }, (err, profile, info) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b;
@@ -36,7 +36,7 @@ const googleAuthCallback = (req, res, next) => {
         }
         if (!profile) {
             console.error('❌ Google Auth Error: No Profile received');
-            return res.redirect('http://localhost:3000/login?error=no_user');
+            return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_user`);
         }
         try {
             console.log('🔍 Processing Google Profile:', profile.id, (_b = (_a = profile.emails) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.value);
@@ -126,7 +126,7 @@ const googleAuthCallback = (req, res, next) => {
                 });
                 console.log('🚀 Redirecting to frontend...');
                 // Successful authentication
-                return res.redirect(`http://localhost:3000?token=${token}`);
+                return res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
             });
         }
         catch (error) {

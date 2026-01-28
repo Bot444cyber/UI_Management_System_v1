@@ -15,10 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sessionMiddleware = void 0;
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-// import { RedisStore } from "connect-redis"; // Removed for Shared Hosting
-// import { redisClient } from "./config/redis"; // Removed
-// import sessionClient from "./config/redisSession"; // Removed
-// import { initWorkers } from "./workers"; // Removed
 const PrismaInstance_1 = __importDefault(require("./config/PrismaInstance"));
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
