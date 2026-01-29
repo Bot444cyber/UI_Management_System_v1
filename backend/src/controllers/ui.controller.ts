@@ -68,7 +68,7 @@ export const getUIs = async (req: Request, res: Response) => {
         const data = uis.map((ui: any) => ({
             ...ui,
             imageSrc: transformToProxy(ui.imageSrc, req),
-            showcase: ui.showcase ? (ui.showcase as string[]).map(url => transformToProxy(url, req)) : [],
+            showcase: (ui.showcase && Array.isArray(ui.showcase)) ? (ui.showcase as string[]).map(url => transformToProxy(url, req)) : [],
             liked: userId ? (ui.userLikes && ui.userLikes.length > 0) : false,
             wished: userId ? (ui.wishedBy && ui.wishedBy.length > 0) : false,
             commentsCount: ui._count?.comments || 0,
@@ -155,7 +155,7 @@ export const getUI = async (req: Request, res: Response) => {
         const data = {
             ...ui,
             imageSrc: transformToProxy(ui.imageSrc, req),
-            showcase: ui.showcase ? (ui.showcase as string[]).map(url => transformToProxy(url, req)) : [],
+            showcase: (ui.showcase && Array.isArray(ui.showcase)) ? (ui.showcase as string[]).map(url => transformToProxy(url, req)) : [],
             fileSize, // Add file size to response
             liked: userId ? (ui.userLikes && (ui.userLikes as any[]).length > 0) : false,
             wished: userId ? (ui.wishedBy && (ui.wishedBy as any[]).length > 0) : false,
@@ -315,7 +315,7 @@ export const createUI = async (req: Request, res: Response) => {
         const ioData = {
             ...newUI,
             imageSrc: transformToProxy(newUI.imageSrc, req),
-            showcase: newUI.showcase ? (newUI.showcase as string[]).map(url => transformToProxy(url, req)) : []
+            showcase: (newUI.showcase && Array.isArray(newUI.showcase)) ? (newUI.showcase as string[]).map(url => transformToProxy(url, req)) : []
         };
         getIO().emit('ui:new', { ui: ioData });
 
@@ -447,7 +447,7 @@ export const updateUI = async (req: Request, res: Response) => {
         const ioData = {
             ...updatedUI,
             imageSrc: transformToProxy(updatedUI.imageSrc, req),
-            showcase: updatedUI.showcase ? (updatedUI.showcase as string[]).map(url => transformToProxy(url, req)) : []
+            showcase: (updatedUI.showcase && Array.isArray(updatedUI.showcase)) ? (updatedUI.showcase as string[]).map(url => transformToProxy(url, req)) : []
         };
         getIO().emit('ui:updated', { ui: ioData });
 

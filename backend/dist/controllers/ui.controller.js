@@ -69,7 +69,7 @@ const getUIs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         ]);
         const data = uis.map((ui) => {
             var _a;
-            return (Object.assign(Object.assign({}, ui), { imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: ui.showcase ? ui.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [], liked: userId ? (ui.userLikes && ui.userLikes.length > 0) : false, wished: userId ? (ui.wishedBy && ui.wishedBy.length > 0) : false, commentsCount: ((_a = ui._count) === null || _a === void 0 ? void 0 : _a.comments) || 0, 
+            return (Object.assign(Object.assign({}, ui), { imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: (ui.showcase && Array.isArray(ui.showcase)) ? ui.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [], liked: userId ? (ui.userLikes && ui.userLikes.length > 0) : false, wished: userId ? (ui.wishedBy && ui.wishedBy.length > 0) : false, commentsCount: ((_a = ui._count) === null || _a === void 0 ? void 0 : _a.comments) || 0, 
                 // Remove the relation arrays from response to keep it clean
                 userLikes: undefined, wishedBy: undefined, _count: undefined }));
         });
@@ -136,7 +136,7 @@ const getUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 console.error("Failed to fetch Drive file size:", err);
             }
         }
-        const data = Object.assign(Object.assign({}, ui), { imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: ui.showcase ? ui.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [], fileSize, liked: userId ? (ui.userLikes && ui.userLikes.length > 0) : false, wished: userId ? (ui.wishedBy && ui.wishedBy.length > 0) : false, commentsCount: ((_b = ui._count) === null || _b === void 0 ? void 0 : _b.comments) || 0, userLikes: undefined, wishedBy: undefined, _count: undefined });
+        const data = Object.assign(Object.assign({}, ui), { imageSrc: (0, helpers_1.transformToProxy)(ui.imageSrc, req), showcase: (ui.showcase && Array.isArray(ui.showcase)) ? ui.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [], fileSize, liked: userId ? (ui.userLikes && ui.userLikes.length > 0) : false, wished: userId ? (ui.wishedBy && ui.wishedBy.length > 0) : false, commentsCount: ((_b = ui._count) === null || _b === void 0 ? void 0 : _b.comments) || 0, userLikes: undefined, wishedBy: undefined, _count: undefined });
         res.json({ status: true, data });
     }
     catch (error) {
@@ -262,7 +262,7 @@ const createUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
         });
         // Emit initial socket event
-        const ioData = Object.assign(Object.assign({}, newUI), { imageSrc: (0, helpers_1.transformToProxy)(newUI.imageSrc, req), showcase: newUI.showcase ? newUI.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [] });
+        const ioData = Object.assign(Object.assign({}, newUI), { imageSrc: (0, helpers_1.transformToProxy)(newUI.imageSrc, req), showcase: (newUI.showcase && Array.isArray(newUI.showcase)) ? newUI.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [] });
         (0, socket_1.getIO)().emit('ui:new', { ui: ioData });
         res.status(201).json({
             status: true,
@@ -376,7 +376,7 @@ const updateUI = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             } : {}))
         });
         // Emit real-time update
-        const ioData = Object.assign(Object.assign({}, updatedUI), { imageSrc: (0, helpers_1.transformToProxy)(updatedUI.imageSrc, req), showcase: updatedUI.showcase ? updatedUI.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [] });
+        const ioData = Object.assign(Object.assign({}, updatedUI), { imageSrc: (0, helpers_1.transformToProxy)(updatedUI.imageSrc, req), showcase: (updatedUI.showcase && Array.isArray(updatedUI.showcase)) ? updatedUI.showcase.map(url => (0, helpers_1.transformToProxy)(url, req)) : [] });
         (0, socket_1.getIO)().emit('ui:updated', { ui: ioData });
         res.json({
             status: true,
