@@ -51,7 +51,8 @@ export default function LoginPage() {
   const handleGoogleLogin = () => {
     toast.loading("Redirecting to Google...", { duration: 3000 });
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:1000";
-    window.location.href = `${apiUrl}/api/auth/google`;
+    const fullUrl = apiUrl.startsWith('http') ? apiUrl : `https://${apiUrl}`;
+    window.location.href = `${fullUrl}/api/auth/google`;
   };
 
   return (
