@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import PrismaInstance from '../config/PrismaInstance';
-import { PaymentStatus, UserStatus } from '../generated/prisma';
+import { PaymentStatus, UserStatus } from '@prisma/client';
 import { transformToProxy } from '../utils/helpers';
 
 export const getStats = async (req: Request, res: Response) => {

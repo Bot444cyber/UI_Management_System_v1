@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import PrismaInstance from '../config/PrismaInstance';
+import PrismaInstance from '@prisma/client';
 import { google } from 'googleapis';
 import { getStats } from './dashboard.controller'; // Import getStats
 
