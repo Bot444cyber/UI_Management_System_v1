@@ -4,8 +4,8 @@
   "description": "",
   "main": "dist/src/server.js",
   "scripts": {
-    "build": "npx prisma generate && tsc && cp -r src/generated dist/src/generated",
-    "start": "npx prisma generate && npx prisma db push && node dist/src/server.js"
+    "build": "npx prisma generate && tsc",
+    "start": "npx prisma db push && node dist/src/server.js"
   },
   "keywords": [],
   "author": "",
