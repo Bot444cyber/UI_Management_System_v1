@@ -1,11 +1,10 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/src/server.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "npx prisma generate && tsc",
-    "start": "npx prisma db push && node dist/src/server.js"
+    "start": "npx prisma db push && node dist/server.js"
   },
   "keywords": [],
   "author": "",
