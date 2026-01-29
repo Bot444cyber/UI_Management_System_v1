@@ -4,6 +4,7 @@
     "description": "",
     "main": "dist/src/server.js",
     "scripts": {
+      "build": "tsc && cp -r src/generated dist/src/generated"
       "start": "npx prisma generate && npx prisma migrate deploy && node dist/src/server.js"
     },
     "keywords": [],
