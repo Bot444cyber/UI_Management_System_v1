@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/components/ts/types';
 import { InteractionService } from '@/services/interaction.service';
 import CommentSection from '@/components/CommentSection';
@@ -25,8 +26,9 @@ import { useSocket } from '@/context/SocketContext';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
-    const { user, logout } = useAuth(); // Get user
+    const { user, logout, isLoading: authLoading } = useAuth(); // Get user
     const { socket } = useSocket();
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<Tab>('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [uis, setUIs] = useState<Product[]>([]);
@@ -184,8 +186,17 @@ export default function Dashboard() {
     };
 
     React.useEffect(() => {
-        if (activeTab === 'overview') fetchStats();
-    }, [activeTab]);
+        if (!authLoading) {
+            if (!user || user.role !== 'ADMIN') {
+                router.push('/');
+                toast.error("Unauthorized access");
+            }
+        }
+    }, [user, authLoading, router]);
+
+    React.useEffect(() => {
+        if (activeTab === 'overview' && user?.role === 'ADMIN') fetchStats();
+    }, [activeTab, user]);
 
     React.useEffect(() => { if (activeTab === 'uis') fetchUIs(); }, [activeTab, uisPage]);
     React.useEffect(() => { if (activeTab === 'users') fetchUsers(); }, [activeTab, usersPage]);
