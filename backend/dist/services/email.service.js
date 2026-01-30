@@ -1,71 +1,65 @@
-import dotenv from 'dotenv';
-import nodemailer from 'nodemailer';
-import { google } from 'googleapis';
-
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __importDefault(require("dotenv"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
+const googleapis_1 = require("googleapis");
 // Load environment variables from .env file
-dotenv.config();
-
+dotenv_1.default.config();
 // OAuth2 configuration
 const CLIENT_ID = process.env.GOOGLE_DRIVE_CLIENT_ID;
 const CLIENT_SECRET = process.env.GOOGLE_DRIVE_CLIENT_SECRET;
 const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
 const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN_GMAIL;
 const EMAIL_USER = process.env.EMAIL_USER;
-
-const oAuth2Client = new google.auth.OAuth2(
-  CLIENT_ID,
-  CLIENT_SECRET,
-  REDIRECT_URI
-);
+const oAuth2Client = new googleapis_1.google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
-
-// Define interface for email options
-interface MailOptions {
-  from: string;
-  to: string;
-  subject: string;
-  html: string;
-  text?: string;
-}
-
 /**
  * Sends a professional OTP email with the Railway Reservation System branding.
  * @param userEmail Recipient email address
  * @param otp The 6-digit OTP code
  * @returns boolean indicating success
  */
-async function sendOTPEmail(userEmail: string, otp: string | number): Promise<boolean> {
-  if (!userEmail || !otp) {
-    console.error('❌ Email and OTP are required');
-    return false;
-  }
-
-  try {
-    const accessTokenResponse = await oAuth2Client.getAccessToken();
-    const accessToken = accessTokenResponse.token;
-
-    if (!accessToken) {
-      throw new Error('Failed to generate access token');
-    }
-
-    const transport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: EMAIL_USER,
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken: accessToken,
-      },
-    } as nodemailer.TransportOptions);
-
-    const mailOptions: MailOptions = {
-      from: `Railway Reservation System <${EMAIL_USER}>`,
-      to: userEmail,
-      subject: 'Your Verification Code',
-      text: `Your verification code is ${otp}`,
-      html: `
+function sendOTPEmail(userEmail, otp) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!userEmail || !otp) {
+            console.error('❌ Email and OTP are required');
+            return false;
+        }
+        try {
+            const accessTokenResponse = yield oAuth2Client.getAccessToken();
+            const accessToken = accessTokenResponse.token;
+            if (!accessToken) {
+                throw new Error('Failed to generate access token');
+            }
+            const transport = nodemailer_1.default.createTransport({
+                service: 'gmail',
+                auth: {
+                    type: 'OAuth2',
+                    user: EMAIL_USER,
+                    clientId: CLIENT_ID,
+                    clientSecret: CLIENT_SECRET,
+                    refreshToken: REFRESH_TOKEN,
+                    accessToken: accessToken,
+                },
+            });
+            const mailOptions = {
+                from: `Railway Reservation System <${EMAIL_USER}>`,
+                to: userEmail,
+                subject: 'Your Verification Code',
+                text: `Your verification code is ${otp}`,
+                html: `
     <!DOCTYPE html>
     <html>
     <head>
@@ -183,15 +177,15 @@ async function sendOTPEmail(userEmail: string, otp: string | number): Promise<bo
     </body>
     </html>
     `
-    };
-
-    const info = await transport.sendMail(mailOptions);
-    console.log('✅ OTP Email sent:', info.messageId);
-    return true;
-  } catch (error: unknown) {
-    console.error('❌ Error sending OTP email:', error instanceof Error ? error.message : error);
-    return false;
-  }
+            };
+            const info = yield transport.sendMail(mailOptions);
+            console.log('✅ OTP Email sent:', info.messageId);
+            return true;
+        }
+        catch (error) {
+            console.error('❌ Error sending OTP email:', error instanceof Error ? error.message : error);
+            return false;
+        }
+    });
 }
-
-export default sendOTPEmail;
+exports.default = sendOTPEmail;
