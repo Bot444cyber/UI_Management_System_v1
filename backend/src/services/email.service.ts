@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     clientId: process.env.GOOGLE_DRIVE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_DRIVE_CLIENT_SECRET,
-    refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+    refreshToken: process.env.GOOGLE_REFRESH_TOKEN_GMAIL,
   },
   tls: {
     rejectUnauthorized: false
