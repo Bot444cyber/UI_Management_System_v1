@@ -6,7 +6,9 @@ dotenv.config();
 
 // Email service configuration with OAuth2
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // true for 465, false for other ports
   auth: {
     type: 'OAuth2',
     user: process.env.EMAIL_USER,
@@ -14,7 +16,10 @@ const transporter = nodemailer.createTransport({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
   },
-});
+  tls: {
+    rejectUnauthorized: false
+  }
+} as nodemailer.TransportOptions);
 
 // Define interface for email options
 interface MailOptions {
