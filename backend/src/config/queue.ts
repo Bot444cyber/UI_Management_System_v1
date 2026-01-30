@@ -1,5 +1,5 @@
 
-import sendOTPEmail from '../services/email.service';
+
 import { processUpload } from '../services/upload.service';
 
 // Mock Queue Implementation for Shared Hosting
@@ -10,20 +10,7 @@ interface QueueMock {
     process: (...args: any[]) => void;
 }
 
-export const emailQueue: QueueMock = {
-    add: async (jobData: any) => {
-        console.log("Mock Queue: Processing Email immediately...");
-        const { type, email, data } = jobData;
-        try {
-            if (type === 'OTP') {
-                await sendOTPEmail(email, data.otp);
-            }
-        } catch (error) {
-            console.error("Mock Queue Email Error:", error);
-        }
-    },
-    process: (...args: any[]) => { } // No-op, accepts args to satisfy TS
-};
+
 
 export const uploadQueue: QueueMock = {
     add: async (jobData: any) => {

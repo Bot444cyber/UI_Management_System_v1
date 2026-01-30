@@ -3,7 +3,7 @@ import { Auth } from '../design/Auth';
 import { Request, Response } from 'express';
 import PrismaInstance from '../config/PrismaInstance';
 import { getIO } from '../config/socket';
-import { emailQueue } from '../config/queue';
+import sendOTPEmail from '../services/email.service';
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -70,12 +70,8 @@ export const VerifyEmailByOTP = async (req: Request, res: Response) => {
                 return res.json({ status: false, message: 'Unable to update otp.' })
             }
 
-            // Add to Email Queue
-            emailQueue.add({
-                type: 'OTP',
-                email: req.body.email,
-                data: { otp: generatedOTP }
-            });
+            // Send OTP Email directly
+            await sendOTPEmail(req.body.email, generatedOTP);
 
             return res.json({ status: true, message: 'OTP is updated.' });
         }
@@ -104,12 +100,8 @@ export const VerifyEmailByOTP = async (req: Request, res: Response) => {
             return res.json({ status: true, message: 'Failed to insert data.' })
         }
 
-        // Add to Email Queue
-        emailQueue.add({
-            type: 'OTP',
-            email: req.body.email,
-            data: { otp: generatedOTP }
-        });
+        // Send OTP Email directly
+        await sendOTPEmail(req.body.email, generatedOTP);
 
         // Return the otp success message...
         return res.json({ status: true, message: 'OTP is generated.', data: generatedOTP });

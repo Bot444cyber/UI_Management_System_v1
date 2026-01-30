@@ -7,7 +7,8 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID || '',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-            callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`,
+            callbackURL: `${process.env.BACKEND_URL}/api/auth/callback/google`,
+            proxy: true,
         },
         async (accessToken: string, refreshToken: string, profile: any, done: any) => {
             try {
@@ -21,7 +22,7 @@ passport.use(
 );
 
 passport.serializeUser((user: any, done) => {
-    done(null, user.user_id);
+    done(null, user.user_id || user.id);
 });
 
 passport.deserializeUser(async (id: number, done) => {
